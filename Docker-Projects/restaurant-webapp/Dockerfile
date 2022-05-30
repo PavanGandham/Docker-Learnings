@@ -7,7 +7,7 @@ LABEL Email="pavangandham99@gmail.com"
 RUN apk update
 
 #Copying file into Httpd server
-COPY ./*.html /var/www/html/
-COPY ./.css /var/www/html/
-COPY ./img/*.jpg /var/www/html/
-COPY ./img/*.gif /var/www/html/
+COPY ./*.html /usr/local/apache2/htdocs/
+COPY ./.css /usr/local/apache2/htdocs/
+COPY ./img/*.jpg /usr/local/apache2/icons/
+COPY ./img/*.gif /usr/local/apache2/icons/
