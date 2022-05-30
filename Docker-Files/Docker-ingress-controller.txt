@@ -1,0 +1,70 @@
+#-------------------------------Adding-Worker-Nodes-using-SSH-------------------------------------------------#
+
+for host in "54.172.67.173" "54.211.211.111"
+do
+ssh -i key-1.pem ubuntu@$host \
+sudo docker swarm join --token SWMTKN-1-5t6cnpw8znzcehnsnwd0srwx48usb9w7290ot45o14z88gz2fu-1qkw9ga6ykbu214i4lupr348s 10.40.1.204:2377;
+sleep 1;
+done
+
+#--------------------------------Creating-Traefik-Network-----------------------------------------------------#
+
+docker network create --driver overlay traefik-net
+
+#--------------------------------Docker-Traefik-controller----------------------------------------------------#
+
+docker service create \
+    --name traefik16 \
+    --constraint=node.role==manager \
+    --publish 80:80 --publish 8080:8080 \
+    --mode global \
+    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
+    --network traefik-net \
+    traefik:v1.6 \
+    --docker \
+    --docker.swarmMode \
+    --docker.domain=traefik \
+    --docker.watch \
+    --web
+#---------------------------------Docker-Visualizer(Optional)------------------------------------------------------------#
+
+docker service create \
+  --name=viz \
+  --publish=7080:8080/tcp \
+  --constraint=node.role==manager \
+  --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
+  dockersamples/visualizer
+
+#-----------------------------------Create-Test-Services--------------------------------------------------------#
+
+docker service create \
+  --name green \
+  --label traefik.port=80 \
+  --network traefik-net \
+  --label traefik.frontend.rule=Host:green.pavanawsb28.xyz \
+  --replicas 3 \
+  sreeharshav/testcontainer:v1
+
+docker service create \
+  --name blue \
+  --label traefik.port=80 \
+  --network traefik-net \
+  --label traefik.frontend.rule=Host:blue.pavanawsb28.xyz \
+  --replicas 3 \
+  sreeharshav/rollingupdate:v1
+
+docker service create \
+  --name red \
+  --label traefik.port=80 \
+  --network traefik-net \
+  --label traefik.frontend.rule=Host:red.pavanawsb28.xyz \
+  --replicas 3 \
+  sreeharshav/rollingupdate:v5
+
+  docker service create \
+  --name orange \
+  --label traefik.port=80 \
+  --network traefik-net \
+  --label traefik.frontend.rule=Host:orange.pavanawsb28.xyz \
+  --replicas 3 \
+  nginx:latest

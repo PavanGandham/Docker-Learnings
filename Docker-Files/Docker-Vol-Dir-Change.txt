@@ -1,0 +1,54 @@
+1. Stop the docker daemon
+sudo service docker stop
+2. Add a configuration file to tell the docker daemon what is the location of the data directory
+Using your preferred text editor add a file named daemon.json under the directory /etc/docker. The file should have this content:
+
+{
+   "data-root": "/path/to/your/docker"
+}
+of course you should customize the location “/path/to/your/docker” with the path you want to use for your new docker data directory.
+
+3. Copy the current data directory to the new one
+sudo rsync -aP /var/lib/docker/ /path/to/your/docker
+4. Rename the old docker directory
+sudo mv /var/lib/docker /var/lib/docker.old
+This is just a sanity check to see that everything is ok and docker daemon will effectively use the new location for its data.
+
+5. Restart the docker daemon
+sudo service docker start
+6. Test
+If everything is ok you should see no differences in using your docker containers. When you are sure that the new directory is being used correctly by docker daemon you can delete the old data directory.
+
+sudo rm -rf /var/lib/docker.old
+Follow the previous steps to move docker data directory and you won’t risk any more to run out of space in your root partition, and you’ll happily use your docker containers for many years to come. 😉
+
+7. Extra step: remote debug on your Docker container!
+Do you know that you can remote debug your application running on a Docker container? Check out my tutorial on Remote debugging a Django project in VS Code! It uses Django as an example, but the Docker related part is general.
+
+#--------------------------------------------------------------------------------------------------------------#
+
+Mounting One Container Volumes to another container to use
+
+docker run -ti --name=Container5 --volumes-from Container4 ubuntu
+# --------------------------------------------------------------------------------------------------------------#
+You can change where Docker stores its files including volumes by changing one of its startup parameters called --data-root.
+
+If you're using systemd for service management, the file is usually located at /lib/systemd/system/docker.service. Edit the file as such:
+
+# Old - taken from the generated docker.service file in Ubuntu 16.04's docker.io package
+ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS
+
+# New
+ExecStart=/usr/bin/dockerd --data-root /new_location/ -H fd:// $DOCKER_OPTS
+Alternatively, you can edit the Docker daemon configuration file which defaults to /etc/docker/daemon.json.
+
+Restart the Docker daemon and your volumes will be under /new_location/volumes/{volume_name}/_data
+
+# ------------------------------------------------------------------------------------------------------------#
+Using Plugins we can mount the docker data directory to a third party storage or centralized storage like EBS,S3,EFS etc
+https://rexray.readthedocs.io/en/v0.9.0/user-guide/docker-plugins/
+
+#-------------------------------Docker-volume-Size-Limit------------------------------------------------------#
+
+docker volume create --driver local --opt type=tmpfs --opt device=tmpfs --opt o=size=100m,uid=1000 testvol3
+type can be tmpfs,ext3,ext4,btrfs etc
