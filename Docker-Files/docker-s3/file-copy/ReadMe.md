@@ -14,7 +14,7 @@ It's essential to note that while environment variables (ENV_VAR) containing cre
 
 For a more comprehensive understanding of the workflow and the Dockerfile implementation, refer to the example below:
 
-![Screenshot](images/workflow.jpeg)
+![Screenshot](../images/workflow.jpeg)
 
 
 
