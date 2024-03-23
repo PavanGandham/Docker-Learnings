@@ -1,7 +1,7 @@
 
-# Copy S3 Files to Docker Image
+# Copy S3 Python App Files to Docker Image
 
-In a typical workflow, where essential files reside within an S3 Bucket but are imperative for the creation of Docker Containers, leveraging Dockerfile instructions becomes pivotal.
+In a typical workflow, where essential python application files reside within an S3 Bucket but are imperative for the creation of Docker Containers, leveraging Dockerfile instructions becomes pivotal.
 
 - Indeed, we can harness the power of "`ARG`" within the Dockerfile. This nifty feature enables the passage of variables during build time, thereby offering flexibility to tailor the behavior of the Docker Image Build Process according to user requirements.
 
