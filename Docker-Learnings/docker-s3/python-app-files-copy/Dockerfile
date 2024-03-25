@@ -1,6 +1,7 @@
 FROM python:3.8
 
 LABEL description="In this we are trying to copy the python application files in s3 bucket to docker"
+LABEL maintainer="Pavan_Gandham"
 MAINTAINER <Pavan_Gandham>
 
 ARG AWS_ACCESS_KEY_ID
