@@ -6,6 +6,8 @@ This repository contains a singleton Dockerfile that is capable of mounting s3 b
 
 Watch video tutorial on [YouTube](https://www.youtube.com/watch?v=de4uZ2yCGlg);
 
+Blog: https://maxcotec.com/learning/how-to-install-s3fs-to-access-s3-from-docker-container/
+
 ## Prerequisites
 
 * Make sure you already have an s3 bucket in your AWS account. 
